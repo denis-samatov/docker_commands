@@ -1,147 +1,237 @@
 # Docker Commands
 
-Welcome to the **Docker Commands** repository! This repository contains a list of useful Docker commands that help streamline working with Docker images and containers. Whether you're managing containers or building images, these commands will assist you in your daily tasks.
+Welcome to the **Docker Commands** repository! This project serves as a comprehensive, quick-reference guide to the most essential Docker commands.
+
+The goal of this repository is to provide a clear and concise resource for developers of all skill levels—from beginners taking their first steps with Docker to experienced professionals who need a quick refresher on a specific command. Here, you will find a curated collection of commands for managing images, handling containers, debugging, and more, all supplemented with practical examples and explanations.
+
+## Prerequisites
+
+Before you begin, ensure you have Docker installed on your system. If you don't have it installed, you can download it from the official Docker website.
+
+- [Install Docker](https://docs.docker.com/get-docker/)
 
 ## Table of Contents
 
-1. [Working with Images](#working-with-images)
-2. [Working with Containers](#working-with-containers)
-3. [Helpful Commands](#helpful-commands)
-4. [Resources](#resources)
+1. [Building Images](#building-images)
+2. [Dockerfile Basics](#dockerfile-basics)
+3. [Managing Containers](#managing-containers)
+4. [Introduction to Docker Compose](#introduction-to-docker-compose)
+5. [Debugging and Inspection](#debugging-and-inspection)
+6. [System Maintenance](#system-maintenance)
+7. [Contributing](#contributing)
+8. [Resources](#resources)
 
 ---
 
-## Working with Images
+## Building Images
 
-Docker images are the foundation of containers. Below are some useful commands to manage and manipulate Docker images.
+Docker images are blueprints for containers. These commands help you build, manage, and distribute images.
+
+- **Build an Image from a Dockerfile**
+  ```bash
+  docker build -t <image-name>:<tag> .
+  ```
+  This command builds a new Docker image from the instructions in a `Dockerfile`. The `-t` flag tags the image with a name and optional tag. The `.` specifies the build context (the current directory).
 
 - **List Docker Images**
   ```bash
   docker images
   ```
-  or
-  ```bash
-  docker image ls
-  ```
-  Displays a list of all the Docker images available on your system.
+  Displays a list of all Docker images on your system, including their repository, tag, and size.
 
-- **Remove Docker Image(s)**
+- **Remove a Docker Image**
   ```bash
-  docker rmi <image> [image...]
+  docker rmi <image-name>
   ```
-  or
+  Removes a specified image from your local repository. You may need to remove all containers using the image before the image can be removed.
+
+- **Pull an Image from a Registry**
   ```bash
-  docker image rm <image> [image...]
+  docker pull <image-name>:<tag>
   ```
-  Removes the specified image(s) from your local repository.
+  Downloads a Docker image from a public or private registry (like Docker Hub).
 
 ---
 
-## Working with Containers
+## Dockerfile Basics
 
-Docker containers are lightweight, portable, and self-sufficient units that contain everything necessary to run your application. Here are some essential commands to manage them:
+A `Dockerfile` is a text document that contains all the commands a user could call on the command line to assemble an image. Here are some of the most common instructions:
 
-- **Run a Container from an Image**
-  ```bash
-  docker run <image>
+- **`FROM`**: Specifies the base image to build upon.
+  ```Dockerfile
+  FROM ubuntu:20.04
   ```
-  Launches a container based on the specified image.
 
-  - **Assign a Name to the Container**
-    ```bash
-    docker run --name <name> <image>
-    ```
-    Starts a container with a specific name.
+- **`WORKDIR`**: Sets the working directory for subsequent instructions.
+  ```Dockerfile
+  WORKDIR /app
+  ```
 
-  - **Automatically Remove the Container After It Exits**
-    ```bash
-    docker run --rm <image>
-    ```
-    Deletes the container once it stops running.
+- **`COPY`**: Copies files from the host to the container's filesystem.
+  ```Dockerfile
+  COPY . .
+  ```
 
-  - **Start a Container in Interactive Mode**
-    ```bash
-    docker run -it <image>
-    ```
-    Opens an interactive session with the container.
+- **`RUN`**: Executes a command during the build process.
+  ```Dockerfile
+  RUN apt-get update && apt-get install -y python3
+  ```
 
-  - **Run a Container in Detached Mode**
-    ```bash
-    docker run -d <image>
-    ```
-    Runs the container in the background.
+- **`CMD`**: Provides the default command to execute when a container starts.
+  ```Dockerfile
+  CMD ["python3", "app.py"]
+  ```
 
-- **List Running Containers**
+- **`EXPOSE`**: Informs Docker that the container listens on the specified network ports at runtime.
+  ```Dockerfile
+  EXPOSE 5000
+  ```
+
+---
+
+## Managing Containers
+
+Containers are running instances of Docker images. Here are the essential commands for managing their lifecycle.
+
+- **Run a Container**
+  ```bash
+  docker run [OPTIONS] <image-name>
+  ```
+  Creates and starts a new container from an image.
+  - `--name <container-name>`: Assign a custom name.
+  - `-d`: Run in detached mode (in the background).
+  - `-p <host-port>:<container-port>`: Map a port from the host to the container.
+  - `--rm`: Automatically remove the container when it exits.
+  - `-it`: Create an interactive terminal session.
+
+- **List Containers**
   ```bash
   docker ps
   ```
   Shows a list of all currently running containers.
+  - `-a`: Show all containers, including stopped ones.
 
-  - **List All Containers**
-    ```bash
-    docker ps -a
-    ```
-    Shows both running and stopped containers.
-
-- **Stop a Running Container**
+- **Stop a Container**
   ```bash
-  docker stop <container> [container...]
+  docker stop <container-name-or-id>
   ```
-  Stops one or more containers.
+  Stops a running container gracefully.
 
-- **Start a Stopped Container**
+- **Start a Container**
   ```bash
-  docker start <container> [container...]
+  docker start <container-name-or-id>
   ```
-  Restarts one or more stopped containers.
+  Starts a stopped container.
 
 - **Remove a Container**
   ```bash
-  docker rm <container> [container...]
+  docker rm <container-name-or-id>
   ```
-  Deletes one or more containers.
-
-- **Execute a Command in a Running Container**
-  ```bash
-  docker exec <container> <command>
-  ```
-  Runs a command inside a running container.
-
-  - **Execute Bash in a Running Container**
-    ```bash
-    docker exec -it <container> bash
-    ```
-    Starts an interactive bash session inside the container.
+  Deletes a stopped container. Add `-f` to force-remove a running container.
 
 ---
 
-## Helpful Commands
+## Introduction to Docker Compose
 
-In addition to managing images and containers, Docker provides several other commands to make your work more efficient:
+Docker Compose is a tool for defining and running multi-container Docker applications. With a single `docker-compose.yml` file, you can configure your application's services, networks, and volumes.
+
+- **Start All Services**
+  ```bash
+  docker-compose up
+  ```
+  Builds, (re)creates, starts, and attaches to containers for a service. Add the `-d` flag to run in detached mode.
+
+- **Stop All Services**
+  ```bash
+  docker-compose down
+  ```
+  Stops and removes containers, networks, and volumes created by `up`.
+
+- **List Services**
+  ```bash
+  docker-compose ps
+  ```
+  Lists the containers and their status.
+
+- **View Logs**
+  ```bash
+  docker-compose logs <service-name>
+  ```
+  Displays log output from a specific service. Use the `-f` flag to follow logs.
+
+---
+
+## Debugging and Inspection
+
+These commands help you look inside your containers and understand their behavior.
 
 - **View Container Logs**
   ```bash
-  docker logs <container>
+  docker logs <container-name-or-id>
   ```
-  Shows logs from a running or stopped container.
+  Fetches the logs of a container.
+  - `-f`: Follow the log output in real-time.
+  - `--tail <number>`: Show the last `N` lines of the logs.
+
+- **Execute a Command in a Running Container**
+  ```bash
+  docker exec -it <container-name-or-id> <command>
+  ```
+  Runs a command inside a running container. A common use case is starting a shell session:
+  ```bash
+  docker exec -it <container-name-or-id> /bin/bash
+  ```
+
+- **Inspect a Container**
+  ```bash
+  docker inspect <container-name-or-id>
+  ```
+  Returns detailed, low-level information about a container, such as its IP address, volume mounts, and configuration.
 
 - **Monitor Resource Usage**
   ```bash
   docker stats
   ```
-  Displays real-time stats (CPU, memory, network, etc.) for running containers.
+  Displays a live stream of resource usage statistics (CPU, memory, network I/O) for all running containers.
+
+---
+
+## System Maintenance
+
+Keep your Docker environment clean and efficient with these commands.
 
 - **Remove All Stopped Containers**
   ```bash
   docker container prune
   ```
-  Deletes all stopped containers.
+  Deletes all stopped containers in one command.
+
+- **Remove Unused Images**
+  ```bash
+  docker image prune
+  ```
+  Deletes all dangling images (images not tagged or associated with any container).
+  - `-a`: Remove all unused images, not just dangling ones.
 
 - **Clean Up Unused Docker Objects**
   ```bash
   docker system prune
   ```
-  Removes all unused containers, networks, images (not referenced by any container), and optionally, volumes.
+  Removes all unused containers, networks, and dangling images.
+  - `--volumes`: Also remove unused volumes.
+
+---
+
+## Contributing
+
+Contributions are welcome! If you have a favorite Docker command that you think is missing, or if you have a suggestion for improving an explanation, please feel free to open a pull request.
+
+1. Fork the repository.
+2. Create a new branch (`git checkout -b feature/add-new-command`).
+3. Make your changes.
+4. Commit your changes (`git commit -m 'Add new command'`).
+5. Push to the branch (`git push origin feature/add-new-command`).
+6. Open a pull request.
 
 ---
 
