@@ -1,3 +1,6 @@
+> **This repository has been archived and consolidated into [`learning-notes`](https://github.com/denis-samatov/learning-notes/tree/main/docker).**
+> This copy is kept for history; see the link above for the current version.
+
 # Docker Commands
 
 Welcome to the **Docker Commands** repository! This project serves as a comprehensive, quick-reference guide to the most essential Docker commands.
