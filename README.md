@@ -1,4 +1,4 @@
-> **This repository has been archived and consolidated into [`learning-notes`](https://github.com/denis-samatov/learning-notes/tree/main/docker).**
+> **The consolidated teaching material is maintained in [`learning-notes`](https://github.com/denis-samatov/learning-notes/tree/main/docker).**
 > This copy is kept for history; see the link above for the current version.
 
 # Docker Commands
